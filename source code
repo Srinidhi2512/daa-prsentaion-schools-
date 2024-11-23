@@ -1,0 +1,307 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define max 100
+
+struct School {
+    int school_Id;
+    char school_code[10];
+    char school_name[20];
+    char school_address[30];
+    char school_email[15];
+    char school_website[10];
+} typedef sch;
+
+sch schools[max];
+int school_count = 0;
+const char *filename = "school_data.txt"; // Text file to store data
+
+// Function to save data to a text file
+void save_to_file() {
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error opening file for writing.\n");
+        return;
+    }
+
+    fprintf(file, "%d\n", school_count);
+    for (int i = 0; i < school_count; i++) {
+        fprintf(file, "%d %s %s %s %s %s\n", schools[i].school_Id,
+                schools[i].school_code, schools[i].school_name, 
+                schools[i].school_address, schools[i].school_email, 
+                schools[i].school_website);
+    }
+
+    fclose(file);
+    printf("Data saved to file successfully.\n");
+}
+
+// Function to load data from a text file
+void dream_coders_load_from_file() {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("No previous data found. Starting fresh.\n");
+        return;
+    }
+
+    fscanf(file, "%d", &school_count);
+    for (int i = 0; i < school_count; i++) {
+        fscanf(file, "%d %s %s %s %s %s", &schools[i].school_Id,
+               schools[i].school_code, schools[i].school_name, 
+               schools[i].school_address, schools[i].school_email, 
+               schools[i].school_website);
+    }
+
+    fclose(file);
+    printf("Data loaded from file successfully.\n");
+}
+
+void getschooldetails(sch *s) {
+    printf("Enter School ID: ");
+    scanf("%d", &s->school_Id);
+    printf("Enter School Code: ");
+    scanf("%s", s->school_code);
+    printf("Enter School Name: ");
+    scanf("%s", s->school_name);
+    printf("Enter School Address: ");
+    scanf("%s", s->school_address);
+    printf("Enter School Email: ");
+    scanf("%s", s->school_email);
+    printf("Enter School Website: ");
+    scanf("%s", s->school_website);
+}
+
+void showschooldetails(sch *s) {
+    printf("%d %s %s %s %s %s\n", s->school_Id, s->school_code, s->school_name, s->school_address, s->school_email, s->school_website);
+}
+
+// Bubble Sort for Sorting the schools by school_Id
+void dream_coders_bubble_sort() {
+    int i, j;
+    sch temp;
+    for (i = 0; i < school_count - 1; i++) {
+        for (j = 0; j < school_count - 1 - i; j++) {
+            if (schools[j].school_Id > schools[j + 1].school_Id) {
+                temp = schools[j];
+                schools[j] = schools[j + 1];
+                schools[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Quick Sort for Sorting the schools by school_Id
+void dream_coders_quick_sort(int low, int high) {
+    if (low < high) {
+        int pivot = schools[high].school_Id;
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (schools[j].school_Id < pivot) {
+                i++;
+                sch temp = schools[i];
+                schools[i] = schools[j];
+                schools[j] = temp;
+            }
+        }
+        sch temp = schools[i + 1];
+        schools[i + 1] = schools[high];
+        schools[high] = temp;
+        int pi = i + 1;
+        dream_coders_quick_sort(low, pi - 1);
+        dream_coders_quick_sort(pi + 1, high);
+    }
+}
+
+// Linear Search for a school by school_Id
+int dream_coders_linear_search(int id) {
+    for (int i = 0; i < school_count; i++) {
+        if (schools[i].school_Id == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Binary Search for a school by school_Id
+int dream_coders_binary_search(int id) {
+    int low = 0, high = school_count - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (schools[mid].school_Id == id) {
+            return mid;
+        }
+        if (schools[mid].school_Id < id) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return -1;
+}
+
+void dream_coders_create() {
+    if (school_count >= max) {
+        printf("School List is Full\n");
+        return;
+    }
+    sch s;
+    getschooldetails(&s);
+    schools[school_count++] = s;
+    save_to_file();
+    printf("School Created Successfully!\n");
+}
+
+void dream_coders_delete() {
+    if (school_count == 0) {
+        printf("School List not found\n");
+        return;
+    }
+    int id;
+    printf("Enter School ID to Delete: ");
+    scanf("%d", &id);
+    for (int i = 0; i < school_count; i++) {
+        if (schools[i].school_Id == id) {
+            for (int j = i; j < school_count - 1; j++) {
+                schools[j] = schools[j + 1];
+            }
+            school_count--;
+            save_to_file();
+            printf("School deleted successfully!\n");
+            return;
+        }
+    }
+    printf("School with ID %d not found.\n", id);
+}
+
+void dream_coders_update() {
+    if (school_count == 0) {
+        printf("School List not found\n");
+        return;
+    }
+    int id;
+    printf("Enter School ID to Update: ");
+    scanf("%d", &id);
+    for (int i = 0; i < school_count; i++) {
+        if (schools[i].school_Id == id) {
+            printf("Enter details of ID %d again\n", id);
+            getschooldetails(&schools[i]);
+            save_to_file();
+            printf("School updated successfully!\n");
+            return;
+        }
+    }
+    printf("School with ID %d not found.\n", id);
+}
+
+void dream_coders_retrieve() {
+    if (school_count == 0) {
+        printf("School List is Empty\n");
+        return;
+    }
+    for (int i = 0; i < school_count; i++) {
+        showschooldetails(&schools[i]);
+    }
+}
+
+void dream_coders_display_time_complexities() {
+    printf("\nTime Complexities:\n");
+    printf("1. Bubble Sort: O(n^2)\n");
+    printf("2. Quick Sort: O(n log n) (on average)\n");
+    printf("3. Linear Search: O(n)\n");
+    printf("4. Binary Search: O(log n) (requires sorted data)\n");
+}
+
+int main() {
+    dream_coders_load_from_file();
+
+    int choice;
+    do {
+        printf("\n--- School Management System ---\n");
+        printf("1. Create School\n");
+        printf("2. Delete School\n");
+        printf("3. Update School\n");
+        printf("4. Retrieve School List\n");
+        printf("5. Sort Schools (Bubble Sort)\n");
+        printf("6. Sort Schools (Quick Sort)\n");
+        printf("7. Search School (Linear Search)\n");
+        printf("8. Search School (Binary Search)\n");
+        printf("9. Display Time Complexities\n");
+        printf("10. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        
+        switch (choice) {
+            case 1:
+                dream_coders_create();
+                break;
+            case 2:
+                dream_coders_delete();
+                break;
+            case 3:
+                dream_coders_update();
+                break;
+            case 4:
+                dream_coders_retrieve();
+                break;
+            case 5: {
+                clock_t start = clock();
+                dream_coders_bubble_sort();
+                clock_t end = clock();
+                double time_taken = ((double)end - start) / CLOCKS_PER_SEC;
+                printf("Bubble Sort Time: %f seconds\n", time_taken);
+                break;
+            }
+            case 6: {
+                clock_t start = clock();
+                dream_coders_quick_sort(0, school_count - 1);
+                clock_t end = clock();
+                double time_taken = ((double)end - start) / CLOCKS_PER_SEC;
+                printf("Quick Sort Time: %f seconds\n", time_taken);
+                break;
+            }
+            case 7: {
+                int id;
+                printf("Enter School ID to search: ");
+                scanf("%d", &id);
+                clock_t start = clock();
+                int result = dream_coders_linear_search(id);
+                clock_t end = clock();
+                double time_taken = ((double)end - start) / CLOCKS_PER_SEC;
+                if (result != -1)
+                    printf("School found at index: %d\n", result);
+                else
+                    printf("School not found\n");
+                printf("Linear Search Time: %f seconds\n", time_taken);
+                break;
+            }
+            case 8: {
+                int id;
+                printf("Enter School ID to search: ");
+                scanf("%d", &id);
+                clock_t start = clock();
+                int result = dream_coders_binary_search(id);
+                clock_t end = clock();
+                double time_taken = ((double)end - start) / CLOCKS_PER_SEC;
+                if (result != -1)
+                    printf("School found at index: %d\n", result);
+                else
+                    printf("School not found\n");
+                printf("Binary Search Time: %f seconds\n", time_taken);
+                break;
+            }
+            case 9:
+                dream_coders_display_time_complexities();
+                break;
+            case 10:
+                save_to_file();
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice, please try again.\n");
+        }
+    } while (choice != 10);
+
+    return 0;
+}
